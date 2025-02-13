@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuários</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="menu">
+        <input id="menu__toggle" type="checkbox" />
+        <label class="menu__btn" for="menu__toggle">
+            <span></span>
+        </label>
+
+        <ul class="menu__box">
+            <li><a class="menu__item" href="http://127.0.0.1:5000/">Usuários</a></li>
+            <li><a class="menu__item" href="{{ url_for('books') }}">Livros</a></li>
+            <li><a class="menu__item" href="INSERIR_PAGINA.HTML">Item3</a></li>
+            <li><a class="menu__item" href="INSERIR_PAGINA.HTML">Item4</a></li>
+        </ul>
+
+        <h1>Lista de Usuários</h1>
+        <form id="formulario1" method="POST" action="/add">
+            Nome: <input id="nome" type="text" name="nome" required>
+            RA: <input id="ra" type="number" name="ra" required>
+            <button type="submit">Adicionar</button>
+        </form>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>RA</th>
+            <th>Ações</th>
+        </tr>
+        {% for usuario in usuarios %}
+        <tr>
+            <td>{{ usuario['id'] }}</td>
+            <td>{{ usuario['nome'] }}</td>
+            <td>{{ usuario['ra'] }}</td>
+            <td><a id="delete_button" href="/delete/{{ usuario['id'] }}">Deletar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    </div>
+    
+
+</body>
+
+</html>
