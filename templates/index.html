@@ -17,36 +17,58 @@
         </label>
 
         <ul class="menu__box">
-            <li><a class="menu__item" href="http://127.0.0.1:5000/">Usuários</a></li>
-            <li><a class="menu__item" href="{{ url_for('books') }}">Livros</a></li>
-            <li><a class="menu__item" href="INSERIR_PAGINA.HTML">Item3</a></li>
-            <li><a class="menu__item" href="INSERIR_PAGINA.HTML">Item4</a></li>
+            <!-- Link para Usuários (apenas para professores) -->
+            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
+                <li><a class="menu__item" href="http://127.0.0.1:5000/">Usuários</a></li>
+            {% endif %}
+            
+            <!-- Link para adicionar ou remover Livros (apenas para professores) -->
+            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
+                <li><a class="menu__item" href="{{ url_for('books') }}">Livros</a></li>
+            {% endif %}
+            
+            <!-- Se o usuário não estiver logado, mostrar Login e Registrar -->
+            {% if 'user_id' not in session %}
+                <li><a class="menu__item" href="{{ url_for('login') }}">Login</a></li>
+                <li><a class="menu__item" href="{{ url_for('register') }}">Registrar</a></li>
+            {% else %}
+                <!-- Mostrar Olá e Logout para usuários logados -->
+                <li><span class="menu__item">Olá, {% if session['user_tipo'] == 'Professor' %}Professor {% endif %}{{ session['user_nome'] }}!</span></li>
+                <li><a class="menu__item logout-button" href="{{ url_for('logout') }}">Logout</a></li>
+            {% endif %}
         </ul>
 
-        <h1>Lista de Usuários</h1>
-        <form id="formulario1" method="POST" action="/add">
-            Nome: <input id="nome" type="text" name="nome" required>
-            RA: <input id="ra" type="number" name="ra" required>
+        <h1>Adicionar Aluno</h1>
+        <form id="formulario1" method="POST" action="/add_aluno">
+            Nome: <input id="nome" class="form_item" type="text" name="nome" required>
+            RA: <input id="ra" class="form_item" type="number" name="ra" required>
+            E-Mail: <input id="email" class="form_item" type="email" name="email" required>
+            Senha: <input id="senha" class="form_item" type="password" name="senha" required>
             <button type="submit">Adicionar</button>
         </form>
 
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Nome</th>
-            <th>RA</th>
-            <th>Ações</th>
-        </tr>
-        {% for usuario in usuarios %}
-        <tr>
-            <td>{{ usuario['id'] }}</td>
-            <td>{{ usuario['nome'] }}</td>
-            <td>{{ usuario['ra'] }}</td>
-            <td><a id="delete_button" href="/delete/{{ usuario['id'] }}">Deletar</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+        <h1>Lista de Alunos</h1>
 
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>RA</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                <tr>
+                    <td>{{ aluno['nome'] }}</td>
+                    <td>{{ aluno['email'] }}</td>
+                    <td>{{ aluno['ra'] }}</td>
+                    <td>{{ aluno['tipo'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     
 

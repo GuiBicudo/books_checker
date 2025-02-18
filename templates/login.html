@@ -1,13 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Livros</title>
+    <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
     <div class="menu">
@@ -38,32 +35,11 @@
             {% endif %}
         </ul>
 
-        <h1>Lista de Livros</h1>
-        <form id="formulario2" method="POST" action="/add_book">
-            Nome do Livro: <input id="nome_livro" class="form_item" type="text" name="nome_livro" required>
-            Quantidade: <input id="quant_livro" class="form_item" type="number" name="quant_livro" required>
-            <button type="submit">Adicionar</button>
-        </form>
-
-        <!-- Exibir livros em uma tabela -->
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Nome do Livro</th>
-                <th>Quantidade</th>
-            </tr>
-    
-            {% for livro in livros %}
-            <tr>
-                <td>{{ livro['id'] }}</td>
-                <td>{{ livro['nome_livro'] }}</td>
-                <td>{{ livro['quant_livro'] }}</td>
-                <td><a id="delete_button" href="/delete_book/{{ livro['id'] }}">Deletar</a></td>
-            </tr>
-            {% endfor %}
-    
-        </table>
-
+    <h2>Login</h2>
+    <form method="POST">
+        E-mail: <input type="email" name="email" required><br>
+        Senha: <input type="password" name="senha" required><br>
+        <button type="submit">Entrar</button>
+    </form>
 </body>
-
 </html>

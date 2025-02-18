@@ -134,3 +134,152 @@ button:hover {
     background-color: darkred;
     color: white;
 }
+
+/* botão de Logout */
+.logout-button {
+  padding: 12px 24px;
+  color: red;
+  background-color: #ECEFF1;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Estilos para os campos de formulário */
+.form_item {
+  width: 100%; /* Garantir que os campos ocupem toda a largura disponível */
+  padding: 12px 16px; /* Aumentar o preenchimento dentro do campo */
+  margin: 8px 0; /* Espaçamento entre os campos */
+  border: 2px solid #ccc; /* Borda suave */
+  border-radius: 8px; /* Bordas arredondadas */
+  background-color: #fff; /* Fundo branco */
+  font-size: 16px; /* Fonte maior para melhor legibilidade */
+  color: #333; /* Cor do texto */
+  box-sizing: border-box; /* Inclui o padding e border no cálculo da largura do campo */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transições suaves para borda e sombra */
+}
+
+/* Efeito de foco - quando o campo estiver ativo */
+.form_item:focus {
+  border-color: #32CD32; /* Cor da borda quando o campo está em foco (verde claro) */
+  box-shadow: 0 0 5px rgba(50, 205, 50, 0.6); /* Sombra suave ao redor do campo */
+  outline: none; /* Remover o contorno padrão do navegador */
+}
+
+/* Estilo do rótulo (label) */
+label {
+  font-size: 18px; /* Aumentar o tamanho da fonte do rótulo */
+  color: #555; /* Cor do texto do rótulo */
+  display: block; /* Tornar o rótulo um bloco para que ele ocupe a linha inteira */
+  margin-bottom: 6px; /* Espaço entre o rótulo e o campo */
+}
+
+/* Estilo de campos do tipo "number" (para a quantidade de livros) */
+#quant_livro {
+  appearance: none; /* Propriedade padrão para desabilitar as setas */
+  -moz-appearance: textfield; /* Para Firefox */
+  -webkit-appearance: none; /* Para Chrome/Safari */
+}
+
+/* Para garantir que a aparência seja a mesma em todos os navegadores */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Para Firefox */
+  appearance: none; /* Propriedade padrão para desabilitar as setas */
+}
+
+/* Estilo de campos do tipo "text" (para o nome do livro) */
+#nome_livro {
+  text-transform: capitalize; /* Iniciar cada palavra com letra maiúscula */
+}
+
+/* Estilo do Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0); /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4); /* Cor de fundo do modal */
+}
+
+/* Estilo do conteúdo do Modal */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+}
+
+/* Estilo do botão de fechar */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Estilo de campos do formulário (geral) */
+form {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+form input, form select, form button {
+  width: 100%;
+  margin: 8px 0;
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+form button {
+  background-color: #32CD32;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #228B22;
+}
+
+/* Estilo do botão de logout */
+.logout-button {
+  padding: 12px 24px;
+  color: red;
+  background-color: #ECEFF1;
+  border: none;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.logout-button:hover {
+  color: white;
+  background-color: red;
+}

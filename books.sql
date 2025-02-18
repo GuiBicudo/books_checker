@@ -31,3 +31,14 @@ ALTER TABLE livros ADD COLUMN quant_livro INT not NULL;
 
 ALTER TABLE livros MODIFY nome_livro VARCHAR(255) not NULL;
 
+CREATE TABLE alunos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha VARCHAR(255) NOT NULL,
+    tipo ENUM('Aluno', 'Professor') NOT NULL
+);
+
+ALTER TABLE alunos ADD COLUMN ra INT;
+
+DROP TABLE IF EXISTS usuarios;

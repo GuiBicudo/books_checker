@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="menu">
+        <input id="menu__toggle" type="checkbox" />
+        <label class="menu__btn" for="menu__toggle">
+            <span></span>
+        </label>
+
+        <ul class="menu__box">
+            <!-- Link para Usuários (apenas para professores) -->
+            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
+                <li><a class="menu__item" href="http://127.0.0.1:5000/">Usuários</a></li>
+            {% endif %}
+            
+            <!-- Link para adicionar ou remover Livros (apenas para professores) -->
+            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
+                <li><a class="menu__item" href="{{ url_for('books') }}">Livros</a></li>
+            {% endif %}
+            
+            <!-- Se o usuário não estiver logado, mostrar Login e Registrar -->
+            {% if 'user_id' not in session %}
+                <li><a class="menu__item" href="{{ url_for('login') }}">Login</a></li>
+                <li><a class="menu__item" href="{{ url_for('register') }}">Registrar</a></li>
+            {% else %}
+                <!-- Mostrar Olá e Logout para usuários logados -->
+                <li><span class="menu__item">Olá, {% if session['user_tipo'] == 'Professor' %}Professor {% endif %}{{ session['user_nome'] }}!</span></li>
+                <li><a class="menu__item logout-button" href="{{ url_for('logout') }}">Logout</a></li>
+            {% endif %}
+        </ul>
+
+    <h2>Cadastro</h2>
+    <form method="POST" action="{{ url_for('register') }}">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" required><br>
+    
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+    
+        <label for="tipo">Tipo de Usuário:</label>
+        <select id="tipo" name="tipo" required>
+            <option value="Aluno">Aluno</option>
+            <option value="Professor">Professor</option>
+        </select><br>
+    
+        <label for="senha_criacao">Senha:</label>
+        <input type="password" id="senha_criacao" name="senha_criacao" required><br>
+    
+        <!-- Mostrar campo de código de professor somente se o tipo for 'Professor' -->
+        <div id="codigo_professor_div" style="display: none;">
+            <label for="codigo_professor">Código de Criação de Conta de Professor:</label>
+            <input type="password" id="codigo_professor" name="codigo_professor"><br>
+        </div>
+    
+        <button type="submit">Registrar</button>
+    </form>
+
+    {% if error_message %}
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>{{ error_message }}</p>
+        </div>
+    </div>
+    <script>
+        // Mostrar o modal quando a página for carregada com erro
+        document.getElementById("myModal").style.display = "block";
+
+        // Função para fechar o modal
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+    </script>
+    {% endif %}
+    
+    <script>
+        // JavaScript para mostrar/esconder o campo de código do professor
+        document.getElementById("tipo").addEventListener("change", function() {
+            var tipoUsuario = this.value;
+            var codigoProfessorDiv = document.getElementById("codigo_professor_div");
+            
+            if (tipoUsuario === "Professor") {
+                codigoProfessorDiv.style.display = "block";  // Mostra o campo para código de professor
+            } else {
+                codigoProfessorDiv.style.display = "none";   // Esconde o campo para código de professor
+            }
+        });
+    </script>
+    </form>
+</body>
+</html>
