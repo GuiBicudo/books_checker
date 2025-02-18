@@ -29,7 +29,7 @@ def index():
 
     return render_template('index.html', alunos=alunos)
 
-# Código de criação de conta de professor 
+# Código de criação de conta de professor
 CODIGO_DE_PROFESSOR = 'Conexia123'
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -67,6 +67,11 @@ def register():
             else:
                 senha_hash = generate_password_hash(senha_criacao)  # A senha para alunos será a de criação de conta
 
+            if tipo == 'Aluno':
+                ra = request.form.get('ra')
+                if not ra:  # Verifica se o campo RA foi preenchido para alunos
+                    error_message = "O RA é obrigatório para alunos!"
+            
             if not error_message:
                 # Inserção no banco de dados
                 try:
@@ -74,9 +79,9 @@ def register():
                     if tipo == 'Professor':  # Para professores
                         sql = "INSERT INTO alunos (nome, email, senha, tipo) VALUES (%s, %s, %s, %s)"
                         cursor.execute(sql, (nome, email, senha_hash, tipo))
-                    else:  # Para alunos
-                        sql = "INSERT INTO alunos (nome, email, senha, tipo) VALUES (%s, %s, %s, %s)"
-                        cursor.execute(sql, (nome, email, senha_hash, tipo))
+                    elif tipo == 'Aluno':  # Para alunos
+                        sql = "INSERT INTO alunos (nome, email, senha, tipo, ra) VALUES (%s, %s, %s, %s, %s)"
+                        cursor.execute(sql, (nome, email, senha_hash, tipo, ra))  # Insere o RA também para alunos
 
                     db.commit()
                 except Exception as e:

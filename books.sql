@@ -42,3 +42,5 @@ CREATE TABLE alunos (
 ALTER TABLE alunos ADD COLUMN ra INT;
 
 DROP TABLE IF EXISTS usuarios;
+
+DESCRIBE alunos;

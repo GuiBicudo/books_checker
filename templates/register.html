@@ -45,6 +45,7 @@
     
         <label for="tipo">Tipo de Usuário:</label>
         <select id="tipo" name="tipo" required>
+            <option value="" disabled selected>Escolha o tipo de usuário</option>
             <option value="Aluno">Aluno</option>
             <option value="Professor">Professor</option>
         </select><br>
@@ -57,7 +58,13 @@
             <label for="codigo_professor">Código de Criação de Conta de Professor:</label>
             <input type="password" id="codigo_professor" name="codigo_professor"><br>
         </div>
-    
+
+        <!-- Mostrar campo de RA somente se o tipo for 'Aluno' -->
+        <div id="ra_div" style="display: none;">
+            <label for="ra">RA:</label>
+            <input type="text" id="ra" name="ra"><br>
+        </div>
+
         <button type="submit">Registrar</button>
     </form>
 
@@ -80,18 +87,23 @@
     {% endif %}
     
     <script>
-        // JavaScript para mostrar/esconder o campo de código do professor
+        // JavaScript para mostrar/esconder o campo de código do professor e RA
         document.getElementById("tipo").addEventListener("change", function() {
             var tipoUsuario = this.value;
             var codigoProfessorDiv = document.getElementById("codigo_professor_div");
+            var raDiv = document.getElementById("ra_div");
             
+            // Exibe o campo de código do professor se for 'Professor'
             if (tipoUsuario === "Professor") {
                 codigoProfessorDiv.style.display = "block";  // Mostra o campo para código de professor
+                raDiv.style.display = "none";   // Esconde o campo de RA
             } else {
                 codigoProfessorDiv.style.display = "none";   // Esconde o campo para código de professor
+                raDiv.style.display = "block";  // Mostra o campo de RA
             }
         });
     </script>
+
     </form>
 </body>
 </html>
