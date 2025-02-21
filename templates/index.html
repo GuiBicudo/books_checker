@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Usuários</title>
+    <title>BookHub - Registro de Usuários</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
@@ -39,11 +39,15 @@
         </ul>
 
         <h1>Adicionar Aluno</h1>
-        <form id="formulario1" method="POST" action="/add_aluno">
+        <form id="formulario1" method="POST" action="{{ url_for('register') }}">
             Nome: <input id="nome" class="form_item" type="text" name="nome" required>
             RA: <input id="ra" class="form_item" type="number" name="ra" required>
             E-Mail: <input id="email" class="form_item" type="email" name="email" required>
-            Senha: <input id="senha" class="form_item" type="password" name="senha" required>
+            Senha: <input id="senha" class="form_item" type="password" name="senha_criacao" required>
+
+            <!-- Campo oculto para o tipo de usuário (fixo como 'Aluno') -->
+            <input type="hidden" name="tipo" value="Aluno">
+
             <button type="submit">Adicionar</button>
         </form>
 
@@ -65,12 +69,32 @@
                     <td>{{ aluno['email'] }}</td>
                     <td>{{ aluno['ra'] }}</td>
                     <td>{{ aluno['tipo'] }}</td>
+                    <!-- Botão de deletar aluno -->
+                    <td><a id="delete_button" href="{{ url_for('delete_aluno', id=aluno['id']) }}">Deletar</a></td>
+                    </a>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    
+
+    {% if error_message %}
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>{{ error_message }}</p>
+        </div>
+    </div>
+    <script>
+        // Mostrar o modal quando a página for carregada com erro
+        document.getElementById("myModal").style.display = "block";
+
+        // Função para fechar o modal
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+    </script>
+    {% endif %}
 
 </body>
 

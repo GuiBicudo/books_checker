@@ -3,7 +3,7 @@ import pymysql
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'segredo_super_secreto'  # Altere para uma chave segura
+app.secret_key = 'segredo_super_secreto'  
 
 # Configuração do banco de dados
 def get_db_connection():
@@ -32,6 +32,7 @@ def index():
 # Código de criação de conta de professor
 CODIGO_DE_PROFESSOR = 'Conexia123'
 
+# Rota para registrar um novo aluno ou professor
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     error_message = None  # Variável para armazenar a mensagem de erro
@@ -42,56 +43,58 @@ def register():
         tipo = request.form['tipo']
         senha_criacao = request.form['senha_criacao']
         
-        # Verificando se a senha de criação foi fornecida
         if not senha_criacao:
             return "A senha de criação de conta é obrigatória!", 400
 
-        # Verificando se o email já está registrado no banco de dados
+        # Conexão com o banco de dados
         db = get_db_connection()
         cursor = db.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT * FROM alunos WHERE email = %s", (email,))
-        existing_user = cursor.fetchone()
-        
-        if existing_user:
-            error_message = "Este e-mail já está registrado! Escolha outro."
-        else:
-            senha_criacao_hash = generate_password_hash(senha_criacao)  # Hash da senha de criação
 
-            # Se for professor, a senha de criação de conta será a primeira senha
-            if tipo == 'Professor':
+        try:
+            # Verifica se o email já está registrado
+            cursor.execute("SELECT * FROM alunos WHERE email = %s", (email,))
+            existing_user = cursor.fetchone()
+
+            # Verifica se o RA já está registrado (se for aluno)
+            existing_ra = None
+            ra = request.form.get('ra')
+
+            if tipo == 'Aluno' and ra:
+                cursor.execute("SELECT * FROM alunos WHERE ra = %s", (ra,))
+                existing_ra = cursor.fetchone()
+            
+            # Validações
+            if existing_user:
+                error_message = "Este e-mail já está registrado! Escolha outro."
+            elif existing_ra:
+                error_message = "Este RA já está registrado! Escolha outro."
+            elif tipo == 'Aluno' and not ra:
+                error_message = "O RA é obrigatório para alunos!"
+            elif tipo == 'Professor':
                 codigo_professor = request.form.get('codigo_professor')
                 if not codigo_professor or codigo_professor != CODIGO_DE_PROFESSOR:
-                    error_message = "Código de criação de conta de professor incorreto!"  # Mensagem de erro para código incorreto
-                else:
-                    senha_hash = generate_password_hash(senha_criacao)  # A senha do professor também será a senha de criação
-            else:
-                senha_hash = generate_password_hash(senha_criacao)  # A senha para alunos será a de criação de conta
+                    error_message = "Código de criação de conta de professor incorreto!"
 
-            if tipo == 'Aluno':
-                ra = request.form.get('ra')
-                if not ra:  # Verifica se o campo RA foi preenchido para alunos
-                    error_message = "O RA é obrigatório para alunos!"
-            
+            # Se não houver erro, cria o usuário no banco
             if not error_message:
-                # Inserção no banco de dados
-                try:
-                    cursor = db.cursor()
-                    if tipo == 'Professor':  # Para professores
-                        sql = "INSERT INTO alunos (nome, email, senha, tipo) VALUES (%s, %s, %s, %s)"
-                        cursor.execute(sql, (nome, email, senha_hash, tipo))
-                    elif tipo == 'Aluno':  # Para alunos
-                        sql = "INSERT INTO alunos (nome, email, senha, tipo, ra) VALUES (%s, %s, %s, %s, %s)"
-                        cursor.execute(sql, (nome, email, senha_hash, tipo, ra))  # Insere o RA também para alunos
+                senha_hash = generate_password_hash(senha_criacao)
 
-                    db.commit()
-                except Exception as e:
-                    db.rollback()
-                    print(f"Erro ao registrar: {e}")
-                finally:
-                    cursor.close()
-                    db.close()
+                if tipo == 'Professor':
+                    sql = "INSERT INTO alunos (nome, email, senha, tipo) VALUES (%s, %s, %s, %s)"
+                    cursor.execute(sql, (nome, email, senha_hash, tipo))
+                elif tipo == 'Aluno':
+                    sql = "INSERT INTO alunos (nome, email, senha, tipo, ra) VALUES (%s, %s, %s, %s, %s)"
+                    cursor.execute(sql, (nome, email, senha_hash, tipo, ra))
 
+                db.commit()
                 return redirect(url_for('login'))
+
+        except Exception as e:
+            db.rollback()
+            print(f"Erro ao registrar: {e}")
+        finally:
+            cursor.close()
+            db.close()
 
     return render_template('register.html', error_message=error_message)
 
@@ -115,12 +118,13 @@ def login():
             session['user_nome'] = user['nome']  # Armazenando o nome do usuário
             session['user_tipo'] = user['tipo']
 
-        if user['tipo'] == 'Professor':
-            return redirect(url_for('books'))  # Redireciona para a página de livros
-        else:
-            return redirect(url_for('aluno_dashboard'))  # Pagina de alunos CRIARCRIARCRIARCRIARCRIARCRIARCRIAR
+            # Redireciona para a página correta com base no tipo de usuário
+            if user['tipo'] == 'Professor':
+                return redirect(url_for('books'))  # Redireciona para a página de livros
+            else:
+                return redirect(url_for('aluno_dashboard'))  # Redireciona para a nova página do aluno
 
-        print("E-mail ou senha incorretos!")
+        return "E-mail ou senha incorretos!", 401  # Exibe erro se login falhar
 
     return render_template('login.html')
 
@@ -133,7 +137,23 @@ def dashboard():
     if session['user_tipo'] == 'Professor':
         return redirect(url_for('books'))  # Redireciona para a página de livros
     else:
-        return redirect(url_for('aluno_dashboard'))  # Página do aluno CRIARCRIARCRIARCRIARCRIARCRIARCRIARCRIARCRIARCRIARCRIARCRIARCRIARCRIAR
+        return redirect(url_for('aluno_dashboard'))  # Página do aluno 
+    
+# Rota para o Dashboard do Aluno, caso o usuario seja aluno.
+@app.route('/aluno_dashboard')
+def aluno_dashboard():
+    if 'user_id' not in session or session['user_tipo'] != 'Aluno':
+        return redirect(url_for('login'))  # Se não for aluno, redireciona para o login
+
+    # Conectar ao banco de dados e buscar os livros disponíveis
+    db = get_db_connection()
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+    cursor.execute("SELECT * FROM livros")
+    livros = cursor.fetchall()  # Obtém todos os livros
+    cursor.close()
+    db.close()
+
+    return render_template('student-dashboard.html', livros=livros)  # Passa os livros para o template
 
 # Rota para adicionar um aluno (apenas para professores)
 @app.route('/add_aluno', methods=['POST'])
@@ -191,6 +211,7 @@ def delete_aluno(id):
 
     return redirect(url_for('index'))
 
+#Rota para adicionar um livro
 @app.route('/add_book', methods=['POST'])
 def add_book():
     if 'user_id' not in session or session['user_tipo'] != 'Professor':

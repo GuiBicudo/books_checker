@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BookHub - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>BookHub - Página do Estudante</title>
 </head>
 <body>
 
@@ -35,11 +36,25 @@
             {% endif %}
         </ul>
 
-    <h2>Login</h2>
-    <form method="POST">
-        E-mail: <input type="email" name="email" required><br>
-        Senha: <input type="password" name="senha" required><br>
-        <button type="submit">Entrar</button>
-    </form>
+        <h1>Bem-vindo, {{ session['user_nome'] }}!</h1>
+        <h2>Livros disponíveis:</h2>
+    
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Nome do Livro</th>
+                    <th>Quantidade Disponível</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for livro in livros %}
+                    <tr>
+                        <td>{{ livro.nome_livro }}</td>
+                        <td>{{ livro.quant_livro }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>  
+    
 </body>
 </html>
