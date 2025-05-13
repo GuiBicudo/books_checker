@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>BookHub - Página do Estudante</title>
+    <style>
+        #new-post-form {
+            display: none; /* Inicialmente oculto */
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        #new-post-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        #new-post-form input[type="text"],
+        #new-post-form textarea {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        #new-post-form button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #new-post-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu">
+        <input id="menu__toggle" type="checkbox" />
+        <label class="menu__btn" for="menu__toggle">
+            <span></span>
+        </label>
+
+        <ul class="menu__box">
+            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
+                <li><a class="menu__item" href="http://127.0.0.1:5000/">Usuários</a></li>
+            {% endif %}
+            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
+                <li><a class="menu__item" href="{{ url_for('books') }}">Livros</a></li>
+            {% endif %}
+            {% if 'user_id' in session %}
+                <li><a class="menu__item" href="{{ url_for('view_forum') }}">Fórum</a></li>
+            {% endif %}
+            {% if 'user_id' not in session %}
+                <li><a class="menu__item" href="{{ url_for('login') }}">Login</a></li>
+                <li><a class="menu__item" href="{{ url_for('register') }}">Registrar</a></li>
+            {% else %}
+                <li><span class="menu__item">Olá, {% if session['user_tipo'] == 'Professor' %}Professor {% endif %}{{ session['user_nome'] }}!</span></li>
+                <li><a class="menu__item logout-button" href="{{ url_for('logout') }}">Logout</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <h1>Fórum de Discussão</h1>
+    <button id="show-post-form-btn">Criar nova postagem</button>
+
+    <div id="new-post-form">
+        <h2>Criar Nova Postagem</h2>
+        <form method="POST" action="{{ url_for('view_forum') }}">
+            <label for="title">Título:</label>
+            <input type="text" id="title" name="title" required><br>
+
+            <label for="content">Conteúdo:</label>
+            <textarea id="content" name="content" rows="4" required></textarea><br>
+
+            <button type="submit">Criar Postagem</button>
+            <button type="button" id="cancel-post-form-btn">Cancelar</button>
+        </form>
+    </div>
+
+    {% for post in posts %}
+        <div>
+            <h2>{{ post['title'] }}</h2>
+            <p>{{ post['content'][:150] }}...</p>
+            <a href="{{ url_for('view_post', post_id=post.id) }}" class="ver-mais-link">Ver Mais</a>
+            <small>Postado por {{ post['username'] }} em {{ post['created_at'] }}</small>
+            <hr>
+        </div>
+    {% endfor %}
+
+    <script>
+        const showFormBtn = document.getElementById('show-post-form-btn');
+        const postForm = document.getElementById('new-post-form');
+        const cancelFormBtn = document.getElementById('cancel-post-form-btn');
+
+        showFormBtn.addEventListener('click', function() {
+            postForm.style.display = 'block';
+            showFormBtn.style.display = 'none'; // Oculta o botão de "Criar nova postagem"
+        });
+
+        cancelFormBtn.addEventListener('click', function() {
+            postForm.style.display = 'none';
+            showFormBtn.style.display = 'block'; // Mostra novamente o botão
+        });
+    </script>
+
+</body>
+</html>

@@ -44,3 +44,27 @@ ALTER TABLE alunos ADD COLUMN ra INT;
 DROP TABLE IF EXISTS usuarios;
 
 DESCRIBE alunos;
+
+CREATE TABLE forum_posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES alunos(id)
+);
+CREATE TABLE forum_comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT,
+    user_id INT,
+    text TEXT NOT NULL
+);
+
+ALTER TABLE forum_comments
+ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE forum_comments
+ADD FOREIGN KEY (post_id) REFERENCES forum_posts(id);
+
+ALTER TABLE forum_comments
+ADD FOREIGN KEY (user_id) REFERENCES alunos(id);

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BookHub Post{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>BookHub Post</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/forum">Fórum</a></li>
+                {# Adicione outros links de navegação conforme necessário #}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+            {# Conteúdo específico de cada página será inserido aqui #}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2025 BookHub</p>
+    </footer>
+</body>
+</html>

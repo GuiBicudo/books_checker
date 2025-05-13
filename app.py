@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, Blueprint
 import pymysql
 from werkzeug.security import generate_password_hash, check_password_hash
+from db import get_db_connection # funcao de conexao com o db
 
 app = Flask(__name__)
 app.secret_key = 'segredo_super_secreto'  
@@ -290,5 +291,71 @@ def books():
 
     return render_template('books.html', livros=livros)
 
+# Rota principal do fórum
+@app.route('/forum', methods=['GET', 'POST'])
+def view_forum():
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        user_id = session.get('user_id')
+
+        if user_id:
+            db = get_db_connection()
+            cursor = db.cursor()
+            cursor.execute('INSERT INTO forum_posts (user_id, title, content) VALUES (%s, %s, %s)', (user_id, title, content))
+            db.commit()
+            cursor.close()
+            db.close()
+            # Após a postagem, você pode querer recarregar os posts
+            return redirect(url_for('view_forum')) # Redireciona para a mesma página para exibir a nova postagem
+        else:
+            return redirect(url_for('login')) # Se o usuário não estiver logado
+
+    db = get_db_connection()
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+    cursor.execute('SELECT f.id, f.title, f.content, f.created_at, u.nome AS username FROM forum_posts f JOIN alunos u ON f.user_id = u.id ORDER BY f.created_at DESC')
+    posts = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return render_template('forum.html', posts=posts)
+
+# Rota para visualizar uma postagem individual com comentários
+@app.route('/forum/post/<int:post_id>', methods=['GET', 'POST'])
+def view_post(post_id):
+    db = get_db_connection()
+    cursor = db.cursor(pymysql.cursors.DictCursor)
+
+    # Buscar a postagem
+    cursor.execute('SELECT f.id, f.title, f.content, f.created_at, u.nome AS username FROM forum_posts f JOIN alunos u ON f.user_id = u.id WHERE f.id = %s', (post_id,))
+    post = cursor.fetchone()
+
+    if not post:
+        return "Postagem não encontrada!", 404
+
+    # Buscar os comentários da postagem
+    cursor.execute('SELECT c.id, c.text, c.created_at, u.nome AS username FROM forum_comments c JOIN alunos u ON c.user_id = u.id WHERE c.post_id = %s ORDER BY c.created_at ASC', (post_id,))
+    comments = cursor.fetchall()
+
+    if request.method == 'POST':
+        if 'user_id' not in session:
+            return redirect(url_for('login'))  # Redireciona se não estiver logado
+
+        comment_text = request.form['comment_text']
+        user_id = session['user_id']
+
+        cursor.execute('INSERT INTO forum_comments (post_id, user_id, text) VALUES (%s, %s, %s)', (post_id, user_id, comment_text))
+        db.commit()
+        # Recarrega a página para exibir o novo comentário
+        return redirect(url_for('view_post', post_id=post_id))
+
+    cursor.close()
+    db.close()
+    return render_template('post.html', post=post, comments=comments)
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+# Conteúdo do seu forum.py (você pode simplificar ou remover se toda a lógica estiver no app.py)
+from flask import Blueprint, render_template
+
+forum = Blueprint('forum', __name__, template_folder='templates')

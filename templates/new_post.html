@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BookHub - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Criar Nova Postagem - Fórum</title>
 </head>
 <body>
-
     <div class="menu">
         <input id="menu__toggle" type="checkbox" />
         <label class="menu__btn" for="menu__toggle">
@@ -14,16 +14,6 @@
         </label>
 
         <ul class="menu__box">
-            <!-- Link para Usuários (apenas para professores) -->
-            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
-                <li><a class="menu__item" href="http://127.0.0.1:5000/">Usuários</a></li>
-            {% endif %}
-            
-            <!-- Link para adicionar ou remover Livros (apenas para professores) -->
-            {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
-                <li><a class="menu__item" href="{{ url_for('books') }}">Livros</a></li>
-            {% endif %}
-
             <!-- Link para Fórum (visível para todos os usuários logados) -->
             {% if 'user_id' in session %}
                 <li><a class="menu__item" href="{{ url_for('view_forum') }}">Fórum</a></li>
@@ -35,16 +25,22 @@
                 <li><a class="menu__item" href="{{ url_for('register') }}">Registrar</a></li>
             {% else %}
                 <!-- Mostrar Olá e Logout para usuários logados -->
-                <li><span class="menu__item">Olá, {% if session['user_tipo'] == 'Professor' %}Professor {% endif %}{{ session['user_nome'] }}!</span></li>
+                <li><span class="menu__item">Olá, {{ session['user_nome'] }}!</span></li>
                 <li><a class="menu__item logout-button" href="{{ url_for('logout') }}">Logout</a></li>
             {% endif %}
         </ul>
 
-    <h2>Login</h2>
-    <form method="POST">
-        E-mail: <input type="email" name="email" required><br>
-        Senha: <input type="password" name="senha" required><br>
-        <button type="submit">Entrar</button>
-    </form>
+        <h1>Criar Nova Postagem</h1>
+        <form method="POST">
+            <label for="title">Título:</label>
+            <input type="text" id="title" name="title" required>
+
+            <label for="content">Conteúdo:</label>
+            <textarea id="content" name="content" rows="4" required></textarea>
+
+            <button type="submit">Criar Postagem</button>
+        </form>
+    </div>
+
 </body>
 </html>

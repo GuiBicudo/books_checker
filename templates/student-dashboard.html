@@ -24,6 +24,11 @@
             {% if 'user_id' in session and session['user_tipo'] == 'Professor' %}
                 <li><a class="menu__item" href="{{ url_for('books') }}">Livros</a></li>
             {% endif %}
+
+            <!-- Link para Fórum (visível para todos os usuários logados) -->
+            {% if 'user_id' in session %}
+                <li><a class="menu__item" href="{{ url_for('view_forum') }}">Fórum</a></li>
+            {% endif %}
             
             <!-- Se o usuário não estiver logado, mostrar Login e Registrar -->
             {% if 'user_id' not in session %}

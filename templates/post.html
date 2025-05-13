@@ -1,0 +1,32 @@
+{% extends 'base.html' %}  {# Estenda seu layout base, se tiver um #}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    <p><strong>Por:</strong> {{ post.username }}</p>
+    <p><strong>Data:</strong> {{ post.created_at }}</p>
+    <p>{{ post.content }}</p>
+
+    <h2>Comentários</h2>
+    {% if comments %}
+        <ul>
+            {% for comment in comments %}
+                <li>
+                    <strong>{{ comment.username }}</strong> ({{ comment.created_at }}):
+                    {{ comment.text }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum comentário ainda.</p>
+    {% endif %}
+
+    {% if session.user_id %}
+        <form method="POST">
+            <label for="comment_text">Seu Comentário:</label><br>
+            <textarea id="comment_text" name="comment_text" rows="4" required></textarea><br>
+            <button type="submit">Comentar</button>
+        </form>
+    {% else %}
+        <p><a href="{{ url_for('login') }}">Faça login</a> para comentar.</p>
+    {% endif %}
+{% endblock %}
